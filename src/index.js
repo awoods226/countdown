@@ -10,7 +10,6 @@ ReactDOM.render(
     title={root.dataset.title}
     displayTitle={false}
     displaySeconds={false}
-    startDateTime={new Date("2018-08-04T07:30")}
   />,
   root
 );
