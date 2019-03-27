@@ -70,12 +70,7 @@ class CountdownTimer extends Component {
       );
     }
   };
-  minTwoDigits = n => {
-    if (n < 0) {
-      return n;
-    }
-    return (n < 10 ? "0" : "") + n;
-  };
+
   getObjFromTime = dateTime => {
     return this.state.endTimes.filter(f => {
       return dateFns.isEqual(f.dateTime, dateTime);

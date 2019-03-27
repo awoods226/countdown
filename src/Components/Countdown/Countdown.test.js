@@ -6,4 +6,6 @@ it("can parseTime string", () => {
   const startTime = dateFns.parse("2018-08-05T07:30");
   var timeLeft = parseTimeString(expiresAt, startTime);
   expect(timeLeft).toBeTruthy();
+  var firstDay = timeLeft[0];
+  expect(firstDay.dateTime).toBe(dateFns.parse("2018-08-05T14:30:00"));
 });
