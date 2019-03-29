@@ -18,7 +18,9 @@ export function parseTimeString(expiresAt, startDateTime) {
     //strip off duration
     let splitArray = f.split("d");
     let dateTime = splitArray[0];
-    let duration = splitArray[1].replace("d", "");
+    // let duration = splitArray[1].replace("d", "");
+    // let durationArray = f.split(":");
+    let duration = parseDuration(splitArray[1]);
 
     // parse string to a date object
     var date = dateFns.parse(dateTime);
@@ -33,7 +35,7 @@ export function parseTimeString(expiresAt, startDateTime) {
     newDate = dateFns.setDate(newDate, newDate.getDate() + distance);
     newDate = dateFns.setHours(newDate, hours);
     newDate = dateFns.setMinutes(newDate, minutes);
-    let eventDurationMinutes = parseInt(duration);
+    let eventDurationMinutes = duration;
     let startTime = dateFns.parse(newDate);
     let endTime = dateFns.addMinutes(startTime, eventDurationMinutes);
 
@@ -56,32 +58,32 @@ export function parseTimeString(expiresAt, startDateTime) {
   return localTimes;
 }
 export function getTimeRemaining(startTime, endTimes, targetTime) {
-  if (!endTimes) {
+  if (!endTimes || !targetTime) {
     return;
   }
   let now = startTime;
   if (!now) {
     now = new Date();
   }
-  // remove any events that already happened today
 
   let difference_ms = dateFns.differenceInMilliseconds(
     targetTime.dateTime,
     now
   );
-  difference_ms = difference_ms / 1000;
-  var seconds = Math.floor(difference_ms % 60);
+  var diff_seconds = difference_ms / 1000;
+  var seconds = Math.floor(diff_seconds % 60);
   if (seconds === -0) {
     seconds = 0;
   }
-  difference_ms = difference_ms / 60;
-  var minutes = Math.floor(difference_ms % 60);
+  var diff_mins = diff_seconds / 60;
+  var minutes = Math.floor(diff_mins % 60);
   if (minutes === -0) {
     minutes = 0;
   }
-  difference_ms = difference_ms / 60;
-  var hours = Math.floor(difference_ms % 24);
-  var days = Math.floor(difference_ms / 24);
+  var diff_hours = diff_mins / 60;
+  var hours = Math.floor(diff_hours % 24);
+  var days = Math.floor(diff_hours / 24);
+
   var remaining = {
     days: minTwoDigits(days),
     hours: minTwoDigits(hours),
@@ -107,3 +109,18 @@ const minTwoDigits = n => {
   }
   return (n < 10 ? "0" : "") + n;
 };
+
+export function parseDuration(durationString) {
+  // strip d
+  let duration = durationString.replace("d", "");
+  // split hours and minutes
+  // let durationArray = duration.split(":");
+  // let totalMinutes = 0;
+  // let hours = parseInt(durationArray[0]);
+  // let minutes = parseInt(durationArray[1]);
+  // if (hours > 0) {
+  //   totalMinutes += hours * 60;
+  // }
+  // totalMinutes += minutes;
+  return parseInt(duration);
+}

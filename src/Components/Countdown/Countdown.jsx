@@ -15,6 +15,9 @@ class CountdownTimer extends Component {
     };
   }
   componentDidMount() {
+    this.init();
+  }
+  init = () => {
     var localTimes = parseTimeString(
       this.props.expiresAt,
       this.props.startDateTime
@@ -23,7 +26,7 @@ class CountdownTimer extends Component {
       { endTimes: localTimes, targetTime: localTimes[this.state.eventIndex] },
       () => this.start()
     );
-  }
+  };
   // Clean up by cancelling any animation frame previously scheduled
   componentWillUnmount() {
     this.stop();
@@ -37,7 +40,7 @@ class CountdownTimer extends Component {
       this.state.endTimes,
       this.state.targetTime
     );
-    if (timeLeft.total <= 0) {
+    if (timeLeft.total < 1) {
       this.stop();
     } else {
       this.setState(
@@ -47,7 +50,6 @@ class CountdownTimer extends Component {
     }
   };
   stop = () => {
-    // cancelAnimationFrame(this.frameId);
     // is event currently live, if not set next target
     const { targetTime } = this.state;
     var isEventLive = isEventOngoing(
@@ -60,14 +62,23 @@ class CountdownTimer extends Component {
         () => (this.frameId = requestAnimationFrame(this.tick))
       );
     } else {
+      let nextEvent = this.state.eventIndex + 1;
+      if (this.state.eventIndex === 0 && this.state.endTimes.length === 1) {
+        nextEvent = 0;
+        cancelAnimationFrame(this.frameId);
+        this.init();
+      }
+
       this.setState(
         {
           isLiveNow: false,
-          targetTime: this.state.endTimes[this.state.eventIndex],
-          eventIndex: this.state.eventIndex + 1
+          targetTime: this.state.endTimes[nextEvent],
+          eventIndex: nextEvent
         },
         () => (this.frameId = requestAnimationFrame(this.tick))
       );
+      if (nextEvent === 0) {
+      }
     }
   };
 
@@ -79,7 +90,7 @@ class CountdownTimer extends Component {
   render() {
     return (
       <div>
-        {this.state.timeLeft && !this.state.isLiveNow && (
+        {this.state.timeLeft && this.state.isLiveNow === false && (
           <div className={"countdown-container"}>
             {this.props.displayTitle && <span>{this.props.title}</span>}
             <div className="col cd-days">
@@ -102,7 +113,8 @@ class CountdownTimer extends Component {
             )}
           </div>
         )}
-        {this.state.isLiveNow && (
+        {/* {this.state.isLiveNow && ( */}
+        {this.state.isLiveNow === true && (
           <a>
             <span>LIVE NOW</span>
           </a>
